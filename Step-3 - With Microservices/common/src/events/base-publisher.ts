@@ -10,8 +10,8 @@ export abstract class Publisher<T extends Event> {
   abstract subject: T["subject"];
   private producer: Producer;
 
-  constructor(kafka: Kafka) {
-    this.producer = kafka.producer();
+  constructor(producer: Producer) {
+    this.producer = producer;
   }
 
   async connect() {

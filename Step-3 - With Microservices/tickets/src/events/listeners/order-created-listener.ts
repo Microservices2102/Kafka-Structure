@@ -1,39 +1,40 @@
-import {
-  Listener,
-  OrderCancelledEvent,
-  Subjects,
-} from "../../../../common/src/index";
+import { Listener, OrderCreatedEvent, Subjects } from "@rallycoding/common";
 import { kafkaWrapper } from "../../kafka-wrapper";
 import { queueGroupName } from "./queue-group-name";
 import { Ticket } from "../../models/ticket";
 import { TicketUpdatedPublisher } from "../publishers/ticket-updated-publisher";
 
-export class OrderCancelledListener extends Listener<OrderCancelledEvent> {
-  readonly subject = Subjects.OrderCancelled;
+export class OrderCreatedListener extends Listener<OrderCreatedEvent> {
+  readonly subject = Subjects.OrderCreated;
   queueGroupName = queueGroupName;
 
-  async onMessage(data: OrderCancelledEvent["data"]) {
+  async onMessage(data: OrderCreatedEvent["data"]) {
+    // Find the ticket that the order is reserving
     const ticket = await Ticket.findById(data.ticket.id);
 
+    // If no ticket, throw error
     if (!ticket) {
       throw new Error("Ticket not found");
     }
 
-    ticket.set({ orderId: undefined });
+    // Mark the ticket as being reserved by setting its orderId property
+    ticket.set({ orderId: data.id });
+
+    // Save the ticket
     await ticket.save();
     await new TicketUpdatedPublisher(kafkaWrapper.producer).publish({
       id: ticket.id,
-      orderId: ticket.orderId,
-      userId: ticket.userId,
       price: ticket.price,
       title: ticket.title,
+      userId: ticket.userId,
+      orderId: ticket.orderId,
       version: ticket.version,
     });
   }
 
   async listen() {
     await kafkaWrapper.subscribe(this.subject, async (message: string) => {
-      const data: OrderCancelledEvent["data"] = JSON.parse(message);
+      const data: OrderCreatedEvent["data"] = JSON.parse(message);
       await this.onMessage(data);
     });
   }

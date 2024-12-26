@@ -4,8 +4,8 @@ dotenv.config();
 import mongoose from "mongoose";
 import { app } from "./app";
 import { kafkaWrapper } from "./kafka-wrapper";
-import { OrderCreatedListener } from "./events/listners/order-created-listener";
-// import { PaymentProcessedListener } from './events/listeners/payment-processed-listener';
+import { OrderCreatedListener } from "./events/";
+import { PaymentProcessedListener } from "./events/listeners/payment-processed-listener";
 
 const start = async () => {
   console.log("Starting...");
@@ -34,7 +34,7 @@ const start = async () => {
     process.on("SIGTERM", () => kafkaWrapper.producer.disconnect());
 
     // Start listeners
-    new OrderCreatedListener(kafkaWrapper.consumer).listen();
+    // new OrderCreatedListener(kafkaWrapper.consumer).listen();
     // new PaymentProcessedListener(kafkaWrapper.consumer).listen();
 
     // Connect to MongoDB

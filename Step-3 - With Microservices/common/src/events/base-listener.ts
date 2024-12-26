@@ -6,7 +6,7 @@ interface Event {
   data: any;
 }
 
-export abstract class KafkaListener<T extends Event> {
+export abstract class Listener<T extends Event> {
   abstract subject: T["subject"];
   abstract queueGroupName: string;
   abstract onMessage(data: T["data"], message: EachMessagePayload): void;

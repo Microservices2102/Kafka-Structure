@@ -4,8 +4,8 @@
 import mongoose from "mongoose";
 import { app } from "./app";
 import { kafkaWrapper } from "./kafka-wrapper";
-// import { OrderCreatedListener } from "./events/listeners/order-created-listener";
-// import { OrderCancelledListener } from "./events/listeners/order-cancelled-listener";
+import { OrderCreatedListener } from "./events/listeners/order-created-listener";
+import { OrderCancelledListener } from "./events/listeners/order-cancelled-listener";
 
 const start = async () => {
   console.log("Starting...");
@@ -34,9 +34,8 @@ const start = async () => {
     process.on("SIGTERM", () => kafkaWrapper.producer.disconnect());
 
     // Start listeners
-    // new OrderCreatedListener(kafkaWrapper.consumer).listen();
-    // new OrderCancelledListener(kafkaWrapper.consumer).listen();
-    // new PaymentProcessedListener(kafkaWrapper.consumer).listen();
+    new OrderCreatedListener(kafkaWrapper.consumer).listen();
+    new OrderCancelledListener(kafkaWrapper.consumer).listen();
 
     // Connect to MongoDB
     await mongoose.connect(process.env.MONGO_URI);
