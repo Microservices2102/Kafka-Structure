@@ -24,11 +24,4 @@ export class PaymentCreatedListener extends Listener<PaymentCreatedEvent> {
     });
     await order.save();
   }
-
-  async listen() {
-    await kafkaWrapper.subscribe(this.subject, async (message: string) => {
-      const data: PaymentCreatedEvent["data"] = JSON.parse(message);
-      await this.onMessage(data);
-    });
-  }
 }

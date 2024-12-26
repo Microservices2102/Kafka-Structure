@@ -1,26 +1,26 @@
-import express, { Request, Response } from 'express';
-import { body } from 'express-validator';
+import express, { Request, Response } from "express";
+import { body } from "express-validator";
 import {
   validateRequest,
   NotFoundError,
   requireAuth,
   NotAuthorizedError,
   BadRequestError,
-} from '@rallycoding/common';
-import { Ticket } from '../models/ticket';
-import { TicketUpdatedPublisher } from '../events/publishers/ticket-updated-publisher';
-import { natsWrapper } from '../nats-wrapper';
+} from "../../../common/src/index";
+import { Ticket } from "../models/ticket";
+import { TicketUpdatedPublisher } from "../events/publishers/ticket-updated-publisher";
+import { kafkaWrapper } from "../kafka-wrapper";
 
 const router = express.Router();
 
 router.put(
-  '/api/tickets/:id',
+  "/api/tickets/:id",
   requireAuth,
   [
-    body('title').not().isEmpty().withMessage('Title is required'),
-    body('price')
+    body("title").not().isEmpty().withMessage("Title is required"),
+    body("price")
       .isFloat({ gt: 0 })
-      .withMessage('Price must be provided and must be greater than 0'),
+      .withMessage("Price must be provided and must be greater than 0"),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
@@ -31,7 +31,7 @@ router.put(
     }
 
     if (ticket.orderId) {
-      throw new BadRequestError('Cannot edit a reserved ticket');
+      throw new BadRequestError("Cannot edit a reserved ticket");
     }
 
     if (ticket.userId !== req.currentUser!.id) {
@@ -43,7 +43,7 @@ router.put(
       price: req.body.price,
     });
     await ticket.save();
-    new TicketUpdatedPublisher(natsWrapper.client).publish({
+    new TicketUpdatedPublisher(kafkaWrapper.producer).publish({
       id: ticket.id,
       title: ticket.title,
       price: ticket.price,

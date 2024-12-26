@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { updateIfCurrentPlugin } from "mongoose-update-if-current";
-import { OrderStatus } from "@rallycoding/common";
+import { OrderStatus } from "../../../common/src/index";
 import { TicketDoc } from "./ticket";
 export { OrderStatus };
 

@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import jwt from "jsonwebtoken";
-import { validateRequest, BadRequestError } from "@rallycoding/common";
+import { validateRequest, BadRequestError } from "../../../common/src/index";
 
 import { Password } from "../services/password";
 import { User } from "../models/user";

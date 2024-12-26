@@ -8,6 +8,6 @@
     "rootDir": "src",
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
+  "include": ["tickets/src/**/*", "common/src/**/*.ts"],
   "exclude": ["node_modules"]
 }

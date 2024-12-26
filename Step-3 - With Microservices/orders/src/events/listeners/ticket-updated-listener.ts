@@ -22,11 +22,4 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEvent> {
     ticket.set({ title, price });
     await ticket.save();
   }
-
-  async listen() {
-    await kafkaWrapper.subscribe(this.subject, async (message: string) => {
-      const data: TicketUpdatedEvent["data"] = JSON.parse(message);
-      await this.onMessage(data);
-    });
-  }
 }

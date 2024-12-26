@@ -13,30 +13,43 @@ export abstract class Listener<T extends Event> {
 
   private consumer: Consumer;
 
-  constructor(kafka: Kafka, groupId: string) {
-    this.consumer = kafka.consumer({ groupId });
+  constructor(consumer: Consumer) {
+    this.consumer = consumer;
   }
 
-  async listen(brokers: string[]) {
-    await this.consumer.connect();
-    await this.consumer.subscribe({ topic: this.subject, fromBeginning: true });
+  async listen() {
+    try {
+      await this.consumer.connect();
+      await this.consumer.subscribe({
+        topic: this.subject,
+        fromBeginning: true,
+      });
 
-    console.log(
-      `Listening to topic: ${this.subject} in group: ${this.queueGroupName}`
-    );
+      console.log(
+        `Listening to topic: ${this.subject} in group: ${this.queueGroupName}`
+      );
 
-    await this.consumer.run({
-      eachMessage: async (payload: EachMessagePayload) => {
-        console.log(
-          `Message received: ${this.subject} / ${this.queueGroupName}`
-        );
+      await this.consumer.run({
+        eachMessage: async (payload: EachMessagePayload) => {
+          try {
+            console.log(
+              `Message received: ${this.subject} / ${this.queueGroupName}`
+            );
 
-        const parsedData = this.parseMessage(payload.message.value?.toString());
-        if (parsedData) {
-          this.onMessage(parsedData, payload);
-        }
-      },
-    });
+            const parsedData = this.parseMessage(
+              payload.message.value?.toString()
+            );
+            if (parsedData) {
+              this.onMessage(parsedData, payload);
+            }
+          } catch (err) {
+            console.error(`Error processing message: ${err}`);
+          }
+        },
+      });
+    } catch (err) {
+      console.error(`Error setting up listener: ${err}`);
+    }
   }
 
   private parseMessage(data: string | undefined) {

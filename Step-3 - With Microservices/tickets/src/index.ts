@@ -1,5 +1,5 @@
-// import dotenv from "dotenv";
-// dotenv.config();
+import dotenv from "dotenv";
+dotenv.config();
 
 import mongoose from "mongoose";
 import { app } from "./app";
@@ -42,8 +42,9 @@ const start = async () => {
     console.log("Connected to MongoDB");
 
     // Start the server
-    app.listen(3000, () => {
-      console.log("Listening on port 3000!");
+    let port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3002;
+    app.listen(port, () => {
+      console.log(`Listening on port ${port}!!!!!!!!`);
     });
   } catch (err) {
     console.error(err);

@@ -1,4 +1,8 @@
-import { Listener, OrderCreatedEvent, Subjects } from "@rallycoding/common";
+import {
+  Listener,
+  OrderCreatedEvent,
+  Subjects,
+} from "../../../../common/src/index";
 import { kafkaWrapper } from "../../kafka-wrapper";
 import { queueGroupName } from "./queue-group-name";
 import { Ticket } from "../../models/ticket";
@@ -29,13 +33,6 @@ export class OrderCreatedListener extends Listener<OrderCreatedEvent> {
       userId: ticket.userId,
       orderId: ticket.orderId,
       version: ticket.version,
-    });
-  }
-
-  async listen() {
-    await kafkaWrapper.subscribe(this.subject, async (message: string) => {
-      const data: OrderCreatedEvent["data"] = JSON.parse(message);
-      await this.onMessage(data);
     });
   }
 }

@@ -36,11 +36,4 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
       },
     });
   }
-
-  async listen() {
-    await kafkaWrapper.subscribe(this.subject, async (message: string) => {
-      const data: ExpirationCompleteEvent["data"] = JSON.parse(message);
-      await this.onMessage(data);
-    });
-  }
 }

@@ -21,11 +21,4 @@ export class TicketCreatedListener extends Listener<TicketCreatedEvent> {
     });
     await ticket.save();
   }
-
-  async listen() {
-    await kafkaWrapper.subscribe(this.subject, async (message: string) => {
-      const data: TicketCreatedEvent["data"] = JSON.parse(message);
-      await this.onMessage(data);
-    });
-  }
 }

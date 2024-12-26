@@ -4,8 +4,10 @@ dotenv.config();
 import mongoose from "mongoose";
 import { app } from "./app";
 import { kafkaWrapper } from "./kafka-wrapper";
-import { OrderCreatedListener } from "./events/";
-import { PaymentProcessedListener } from "./events/listeners/payment-processed-listener";
+import { TicketCreatedListener } from "./events/listeners/ticket-created-listener";
+import { TicketUpdatedListener } from "./events/listeners/ticket-updated-listener";
+import { ExpirationCompleteListener } from "./events/listeners/expiration-complete-listener";
+import { PaymentCreatedListener } from "./events/listeners/payment-created-listener";
 
 const start = async () => {
   console.log("Starting...");
@@ -34,16 +36,20 @@ const start = async () => {
     process.on("SIGTERM", () => kafkaWrapper.producer.disconnect());
 
     // Start listeners
-    // new OrderCreatedListener(kafkaWrapper.consumer).listen();
-    // new PaymentProcessedListener(kafkaWrapper.consumer).listen();
+
+    new TicketCreatedListener(kafkaWrapper.consumer).listen();
+    new TicketUpdatedListener(kafkaWrapper.consumer).listen();
+    new ExpirationCompleteListener(kafkaWrapper.consumer).listen();
+    new PaymentCreatedListener(kafkaWrapper.consumer).listen();
 
     // Connect to MongoDB
     await mongoose.connect(process.env.MONGO_URI);
     console.log("Connected to MongoDB");
 
     // Start the server
-    app.listen(3000, () => {
-      console.log("Listening on port 3000!");
+    let port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
+    app.listen(port, () => {
+      console.log(`Listening on port ${port}!!!!!!!!`);
     });
   } catch (err) {
     console.error(err);

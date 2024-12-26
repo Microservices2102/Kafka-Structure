@@ -30,11 +30,4 @@ export class OrderCancelledListener extends Listener<OrderCancelledEvent> {
       version: ticket.version,
     });
   }
-
-  async listen() {
-    await kafkaWrapper.subscribe(this.subject, async (message: string) => {
-      const data: OrderCancelledEvent["data"] = JSON.parse(message);
-      await this.onMessage(data);
-    });
-  }
 }

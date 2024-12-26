@@ -3,7 +3,7 @@ import {
   requireAuth,
   NotFoundError,
   NotAuthorizedError,
-} from "@rallycoding/common";
+} from "../../../common/src/index";
 import { Order, OrderStatus } from "../models/order";
 import { OrderCancelledPublisher } from "../events/publisher/order-cancelled-publisher";
 import { kafkaWrapper } from "../kafka-wrapper";
