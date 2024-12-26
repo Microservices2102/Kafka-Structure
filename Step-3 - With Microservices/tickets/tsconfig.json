@@ -9,6 +9,6 @@
     "rootDir": "../", // Adjusted to include the parent directory
     "outDir": "./dist"
   },
-  "include": ["orders/src/**/*", "common/src/**/*.ts"], // Adjusted to match the new rootDir
+  "include": ["tickets/src/**/*", "common/src/**/*.ts"], // Adjusted to match the new rootDir
   "exclude": ["node_modules"]
 }

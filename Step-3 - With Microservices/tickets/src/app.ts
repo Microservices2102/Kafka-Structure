@@ -7,10 +7,10 @@ import {
   NotFoundError,
   currentUser,
 } from "../../common/src/index";
-import { deleteOrderRouter } from "./routes/delete";
-import { newOrderRouter } from "./routes/new";
-import { indexOrderRouter } from "./routes/index";
-import { showOrderRouter } from "./routes/show";
+import { createTicketRouter } from "./routes/new";
+import { showTicketRouter } from "./routes/show";
+import { indexTicketRouter } from "./routes/index";
+import { updateTicketRouter } from "./routes/update";
 
 const app = express();
 app.set("trust proxy", true);
@@ -23,17 +23,15 @@ app.use(
 );
 app.use(currentUser);
 
-app.use(deleteOrderRouter);
-app.use(indexOrderRouter);
-app.use(newOrderRouter);
-app.use(showOrderRouter);
+app.use(createTicketRouter);
+app.use(showTicketRouter);
+app.use(indexTicketRouter);
+app.use(updateTicketRouter);
 
-// Catch-all route for undefined endpoints
 app.all("*", async (req, res) => {
   throw new NotFoundError();
 });
 
-// Use the imported errorHandler
 app.use(errorHandler as express.ErrorRequestHandler);
 
 export { app };
