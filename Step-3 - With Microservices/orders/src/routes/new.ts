@@ -57,17 +57,26 @@ router.post(
     await order.save();
 
     // Publish an event saying that an order was created
-    new OrderCreatedPublisher(kafkaWrapper.publish).publish({
-      id: order.id,
-      version: order.version,
-      status: order.status,
-      userId: order.userId,
-      expiresAt: order.expiresAt.toISOString(),
-      ticket: {
-        id: ticket.id,
-        price: ticket.price,
-      },
-    });
+    try {
+      const payload = {
+        id: order.id,
+        version: order.version,
+        status: order.status,
+        userId: order.userId,
+        expiresAt: order.expiresAt.toISOString(),
+        ticket: {
+          id: ticket.id,
+          price: ticket.price,
+        },
+      };
+
+      await new OrderCreatedPublisher(kafkaWrapper.producer).publish(payload);
+
+      console.log("Order creation event published successfully:", payload);
+    } catch (err) {
+      console.error("Failed to publish order creation event", err);
+      throw new Error("Order creation event could not be published");
+    }
 
     res.status(201).send(order);
   }
